@@ -188,10 +188,12 @@ case $1 in
          cd ${SCPATH[$i]}
          break
       fi
+      if (( $i == $n )); then
+         echo "index is not found"
+         echo "check the available list"
+         echo "cds -l"
+      fi
    done
-   echo "index is not found"
-   echo "check the available list"
-   echo "cds -l"
 ;;
 esac
 }
