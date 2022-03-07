@@ -97,12 +97,15 @@ case $1 in
 "-l")
    i=1
    if [ $# -eq 2 ]; then
-      echo ${SCPATH[$2]}
+      echo ${SCPATH[$(cds_get_i $2)]}
    else
+      echo ""
+      echo " [idx|name]: path"
+      echo ""
       while [  "x${SCPATH[$i]}" != "x" ]
       do
          # echo " $i [${SCIDX[$i]}|${SCNAME[$i]}]: ${SCPATH[$i]}"
-         echo " $i [${SCIDX[$i]}|${SCNAME[$i]}]: ${SCPATH[$i]}"
+         echo " [${SCIDX[$i]}|${SCNAME[$i]}]: ${SCPATH[$i]}"
          let i=i+1
       done
    fi
@@ -124,16 +127,28 @@ case $1 in
       done
    fi
 ;;
-"-s")
-   tmp=${SCPATH[$2]}
-   SCPATH[$2]=${SCPATH[$3]}
-   SCPATH[$3]=$tmp
-   tmp2=${SCNAME[$2]}
-   SCNAME[$2]=${SCNAME[$3]}
-   SCNAME[$3]=$tmp2
-   tmp2=${SCIDX[$2]}
-   SCIDX[$2]=${SCIDX[$3]}
-   SCIDX[$3]=$tmp2
+"-s" | "-sp")
+   cds_get_i $2
+   i1=$idx
+   cds_get_i $3
+   i2=$idx
+   if [[ $i1 -ne 0 ]] && [[ $i2 -ne 0 ]]; then
+      tmp=${SCPATH[$i1]}
+      tmp2=${SCNAME[$i1]}
+
+      SCPATH[$i1]=${SCPATH[$i2]}
+      SCNAME[$i1]=${SCNAME[$i2]}
+
+      SCPATH[$i2]=$tmp
+      SCNAME[$i2]=$tmp2
+
+      if [ "$1" =  "-s" ]; then
+         tmp3=${SCIDX[$i1]}
+         SCIDX[$i1]=${SCIDX[$i2]}
+         SCIDX[$i2]=$tmp3
+      fi
+
+   fi
 ;;
 "-a")
    i=1
@@ -155,45 +170,76 @@ case $1 in
 ;;
 
 "-an" | "-cn")
-   echo "change shortcut name of $2 to $3"
-   SCNAME[$2]=$3
+   cds_get_i $2 # update idx
+   if [[ $idx -ne 0 ]]; then
+      echo "change shortcut name of $2 to $3"
+      SCNAME[$idx]=$3
+   fi
 ;;
 
 "-ai" | "-ci")
-   echo "change shortcut index of $2 to $3"
-   SCIDX[$2]=$3
+   cds_get_i $3 # update idx
+   if [[ $idx -ne 0 ]]; then
+      # switch index
+      i1=$idx
+      cds_get_i $2 # update idx
+      i2=$idx
+      if [[ $idx -ne 0 ]]; then
+         echo "switch shortcut index of $2 to $3"
+         tmp=${SCIDX[$i1]}
+         SCIDX[$i1]=${SCIDX[$i2]}
+         SCIDX[$i2]=$tmp
+      fi
+   else
+      cds_get_i $2 # update idx
+      if [[ $idx -ne 0 ]]; then
+         echo "change shortcut index of $2 to $3"
+         SCIDX[$idx]=$3
+      fi
+   fi
 ;;
 
-"-r")
-   i=$2
-   echo "short cut path $i is removed : ${SCPATH[$i]}"
-   let j=i+1
-   while  [  "x${SCPATH[$j]}" != "x" ]
-   do
-      SCPATH[$i]=${SCPATH[$j]}
-      SCNAME[$i]=${SCNAME[$j]}
-      SCIDX[$i]=${SCIDX[$j]}
-      let i=i+1
-      let j=j+1
-   done
-   SCPATH[$i]=""
-   SCNAME[$i]=""
-   SCIDX[$i]=""
+"-r" | "-rm")
+   cds_get_i $2
+   i=$idx
+   if [[ $i -ne 0 ]]; then
+      echo "short cut path $2 is removed : ${SCPATH[$i]}"
+      let j=i+1
+      while  [  "x${SCPATH[$j]}" != "x" ]
+      do
+         SCPATH[$i]=${SCPATH[$j]}
+         SCNAME[$i]=${SCNAME[$j]}
+         SCIDX[$i]=${SCIDX[$j]}
+         let i=i+1
+         let j=j+1
+      done
+      SCPATH[$i]=""
+      SCNAME[$i]=""
+      SCIDX[$i]=""
+   fi
 ;;
 *)
+   cds_get_i $1 # update idx
+   if [[ $idx -ne 0 ]]; then
+      cd ${SCPATH[$idx]}
+   fi
+;;
+esac
+}
+
+cds_get_i()
+{
    for (( i=1; i<=$n; i++ ))
    do
-      # echo $1 ${SCIDX[$i]}
-      if (( $1 == ${SCIDX[$i]} )); then
-         cd ${SCPATH[$i]}
+      if [ "$1" = "${SCIDX[$i]}" ]; then
+         idx=$i
          break
       fi
       if (( $i == $n )); then
-         echo "index is not found"
+         echo "index '$1' is not in the list"
          echo "check the available list"
          echo "cds -l"
+         idx=0
       fi
    done
-;;
-esac
 }
