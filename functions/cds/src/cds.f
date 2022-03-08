@@ -166,6 +166,7 @@ case $1 in
    SCIDX[$i]=$i
 
    echo "short cut path $i is added : ${SCPATH[$i]}"
+   let n=i
    # SCID[$i] = $i
 ;;
 
@@ -178,7 +179,7 @@ case $1 in
 ;;
 
 "-ai" | "-ci")
-   cds_get_i $3 # update idx
+   cds_get_i $3 0 # update idx
    if [[ $idx -ne 0 ]]; then
       # switch index
       i1=$idx
@@ -217,6 +218,7 @@ case $1 in
       SCNAME[$i]=""
       SCIDX[$i]=""
    fi
+   let n=i
 ;;
 *)
    cds_get_i $1 # update idx
@@ -236,9 +238,11 @@ cds_get_i()
          break
       fi
       if (( $i == $n )); then
+         if (( $# == 1 )); then
          echo "index '$1' is not in the list"
          echo "check the available list"
          echo "cds -l"
+         fi
          idx=0
       fi
    done
