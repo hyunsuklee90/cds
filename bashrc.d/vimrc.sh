@@ -1,2 +1,2 @@
-export VIMINIT="source ${BASHPATH0}/config/vimrc"
+export VIMINIT="source ${CDS_PATH}/config/vimrc"
 

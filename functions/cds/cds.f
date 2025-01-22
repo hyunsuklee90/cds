@@ -2,14 +2,14 @@
 
 cds_save()
 {
-   rm -f $DATAPATH_CDS/data/cds_*
+   rm -f $CDS_DATAPATH/data/cds_*
    i=1
    while [  "x${SCPATH[$i]}" != "x" ]
    do
       echo [${SCNAME[$i]}] idx=${SCIDX[$i]} path=${SCPATH[$i]}
-      echo ${SCPATH[$i]} >> $DATAPATH_CDS/data/cds_path
-      echo ${SCNAME[$i]} >> $DATAPATH_CDS/data/cds_pathname
-      echo ${SCIDX[$i]} >> $DATAPATH_CDS/data/cds_idx
+      echo ${SCPATH[$i]} >> $CDS_DATAPATH/data/cds_path
+      echo ${SCNAME[$i]} >> $CDS_DATAPATH/data/cds_pathname
+      echo ${SCIDX[$i]} >> $CDS_DATAPATH/data/cds_idx
       let i=i+1
    done
 }
@@ -18,7 +18,7 @@ cds_load()
 {
    unset SCPATH SCNAME SCIDX
 
-   if test -f $DATAPATH_CDS/data/cds_path; then
+   if test -f $CDS_DATAPATH/data/cds_path; then
       # read path from the file
       i=1
       while read line; do
@@ -26,17 +26,17 @@ cds_load()
          SCNAME[$i]="-"
          SCIDX[$i]=""
          let i=i+1
-      done < $DATAPATH_CDS/data/cds_path
+      done < $CDS_DATAPATH/data/cds_path
       let n=i-1 # number of saved path
 
       i=1
       while read line; do
          SCNAME[$i]=$line
          let i=i+1
-      done < $DATAPATH_CDS/data/cds_pathname
+      done < $CDS_DATAPATH/data/cds_pathname
 
       i=1
-      for p in $(cat $DATAPATH_CDS/data/cds_idx)
+      for p in $(cat $CDS_DATAPATH/data/cds_idx)
       do
          SCIDX[$i]=$p
          let i=i+1
