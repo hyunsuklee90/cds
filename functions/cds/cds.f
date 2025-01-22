@@ -8,7 +8,7 @@ cds_save()
    do
       echo [${SCNAME[$i]}] idx=${SCIDX[$i]} path=${SCPATH[$i]}
       echo ${SCPATH[$i]} >> $CDS_DATAPATH/data/cds_path
-      echo ${SCNAME[$i]} >> $CDS_DATAPATH/data/cds_pathname
+      echo ${SCNAME[$i]} >> $CDS_DATAPATH/data/cds_tag
       echo ${SCIDX[$i]} >> $CDS_DATAPATH/data/cds_idx
       let i=i+1
    done
@@ -33,7 +33,7 @@ cds_load()
       while read line; do
          SCNAME[$i]=$line
          let i=i+1
-      done < $CDS_DATAPATH/data/cds_pathname
+      done < $CDS_DATAPATH/data/cds_tag
 
       i=1
       for p in $(cat $CDS_DATAPATH/data/cds_idx)
@@ -77,7 +77,8 @@ cds_load()
 
 cds()
 {
-case $1 in
+#case $1 in
+case ${1:-"-l"} in
 "-h" | "-help")
    echo "usage: cds [option]"
    echo "arg ...  :"
@@ -99,9 +100,9 @@ case $1 in
    if [ $# -eq 2 ]; then
       echo ${SCPATH[$(cds_get_i $2)]}
    else
-      echo ""
-      echo " [idx|name]: path"
-      echo ""
+      #echo ""
+      #echo " [idx|tag]: path"
+      #echo ""
       while [  "x${SCPATH[$i]}" != "x" ]
       do
          # echo " $i [${SCIDX[$i]}|${SCNAME[$i]}]: ${SCPATH[$i]}"
@@ -110,23 +111,23 @@ case $1 in
       done
    fi
 ;;
-"")
-   i=1
-   if [ $# -eq 2 ]; then
-      echo ${SCPATH[$2]}
-   else
-      while [  "x${SCPATH[$i]}" != "x" ]
-      do
-         if [ "${SCNAME[$i]}" = "-" ]; then
-            echo " ${SCIDX[$i]}  ${SCPATH[$i]}"
-            let i=i+1
-         else
-            echo " ${SCIDX[$i]}  [${SCNAME[$i]}]"
-            let i=i+1
-         fi
-      done
-   fi
-;;
+#"")
+#   i=1
+#   if [ $# -eq 2 ]; then
+#      echo ${SCPATH[$2]}
+#   else
+#      while [  "x${SCPATH[$i]}" != "x" ]
+#      do
+#         if [ "${SCNAME[$i]}" = "-" ]; then
+#            echo " ${SCIDX[$i]}  ${SCPATH[$i]}"
+#            let i=i+1
+#         else
+#            echo " ${SCIDX[$i]}  [${SCNAME[$i]}]"
+#            let i=i+1
+#         fi
+#      done
+#   fi
+#;;
 "-s" | "-sp")
    cds_get_i $2
    i1=$idx

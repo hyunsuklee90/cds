@@ -1,2 +1,2 @@
-export VIMINIT="source ${CDS_PATH}/config/vimrc"
+export VIMINIT="source ${CDS_HOME}/config/vimrc"
 

@@ -1,6 +1,6 @@
-FUNCTIONS_DIR=$CDS_PATH/functions
+FUNCTIONS_DIR=$CDS_HOME/functions
 
-export CDS_DATAPATH=$CDS_PATH/config/$CDS_ENV
+export CDS_DATAPATH=$CDS_HOME/config/$CDS_ENV
 
 # 모든 *.f 파일 찾고 로드
 if [ -d "$FUNCTIONS_DIR" ]; then
