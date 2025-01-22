@@ -1,7 +1,7 @@
-
-for p in $(ls $PATH_CDS/src)
+BASHPATH="$(dirname "${BASH_SOURCE[0]}")"
+for p in $(ls $BASHPATH/src)
 do
 # echo $PATH_CDS/src/$p
-source $PATH_CDS/src/$p -A export
+source $BASHPATH/src/$p -A export
 done
 cds_load
