@@ -59,7 +59,6 @@ NORMAL 00
 RESET 0
 
 FILE 00
-DIR 01;35
 LINK 36
 MULTIHARDLINK 04;36
 
@@ -78,9 +77,6 @@ SETUID 01;04;37
 SETGID 01;04;37
 CAPABILITY 01;37
 
-STICKY_OTHER_WRITABLE 01;37;44
-OTHER_WRITABLE 01;04;33
-STICKY 04;37;44
 
 #+-------------------+
 #+ Extension Pattern +
@@ -257,6 +253,11 @@ STICKY 04;37;44
 
 # +lhs +
 #+--- programming related ---+
+DIR 01;33                   # Bold      + Yellow
+OTHER_WRITABLE 04;33        # Underline + Yellow
+STICKY 01;35                # Bold      + Purple
+STICKY_OTHER_WRITABLE 04;35 # Underline + Purple
+
 .md 32
 .py 32
 .rs 32
