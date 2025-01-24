@@ -11,4 +11,8 @@ else
     echo "Warning: Functions directory not found!" >&2
 fi
 
+if [ ! -d "$CDS_DATAPATH/data" ]; then
+    mkdir -p $CDS_DATAPATH/data
+fi
+
 cds_load
