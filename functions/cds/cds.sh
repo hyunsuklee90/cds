@@ -221,6 +221,14 @@ case ${1:-"-l"} in
    fi
    let n=i
 ;;
+
+"-p")
+   cds_get_i $2 # update idx
+   if [[ $idx -ne 0 ]]; then
+      echo ${SCPATH[$idx]}
+   fi
+;;
+
 *)
    cds_get_i $1 # update idx
    if [[ $idx -ne 0 ]]; then
