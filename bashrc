@@ -1,10 +1,11 @@
 #!/bin/bash
 
-export CDS_HOME="$(dirname "${BASH_SOURCE[0]}")"
-
 if [ -z "$CDS_ENV" ]; then
     export CDS_ENV=default
 fi
+
+export CDS_HOME="$(dirname "${BASH_SOURCE[0]}")"
+export CDS_DATAPATH=$CDS_HOME/config/$CDS_ENV
 
 # Load all scripts in bashrc.d
 for file in $CDS_HOME/bashrc.d/*.sh; do
