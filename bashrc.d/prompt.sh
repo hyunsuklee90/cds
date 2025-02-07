@@ -6,4 +6,6 @@ export PS1='[\t \u@\h \W]\]$ '
 export PS1='[\[\e[1;33m\]\t\[\e[0m\] \u@\h \W]\$ '
 export PS1='|\[\e[1;36m\]\t[\[\e[0m\]\u@\h \[\e[1;33m\]\W\[\e[0m\]]\$ '
 #export PS1='[\[\e[1;35m\]\t\[\e[0m\] \u@\h \[\e[1;32m\]\W\[\e[0m\]]\$ '
+
 export PS1='|\[\e[1;36m\]\t\[\e[0m\]|\u@\h \[\e[1;33m\]\W\[\e[0m\]\$ '
+#export PS1='|\[\e[1;36m\]\t\[\e[0m\]|\u@$CDS_ENV \[\e[1;33m\]\W\[\e[0m\]\$ '

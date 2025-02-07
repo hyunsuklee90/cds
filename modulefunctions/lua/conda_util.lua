@@ -10,11 +10,10 @@ function conda_util.setup(conda_dir)
     setenv("ANACONDA_HOME", conda_dir)
     setenv("CONDA_SHLVL", "0")
 
---    local bash_init_script = pathJoin(conda_dir, "etc", "profile.d", "conda.sh")
---    if isFile(bash_init_script) then
---        io.stderr:write("call script...?!")
---        execute{cmd="source " .. bash_init_script, modeA={"load"}}
---    end
+    local bash_init_script = pathJoin(conda_dir, "etc", "profile.d", "conda.sh")
+    if isFile(bash_init_script) then
+        execute{cmd="source " .. bash_init_script, modeA={"load"}}
+    end
 
     if mode() == "load" then
         io.stderr:write("Anaconda3 has been loaded.")
@@ -23,10 +22,9 @@ function conda_util.setup(conda_dir)
 
     if mode() == "unload" then
         -- Conda 환경 비활성화 시도
---        if isFile(bash_init_script) then
---        io.stderr:write("call script unload...?!")
---            execute{cmd="source " .. bash_init_script .. " && conda deactivate", modeA={"unload"}}
---        end
+        if isFile(bash_init_script) then
+            execute{cmd="source " .. bash_init_script .. " && conda deactivate", modeA={"unload"}}
+        end
 
         -- 환경 변수 제거
         local conda_vars = {"CONDA_EXE", "CONDA_PREFIX", "CONDA_PYTHON_EXE", "ANACONDA_HOME", "CONDA_SHLVL"}

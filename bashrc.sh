@@ -1,5 +1,7 @@
 #!/bin/bash
 
+[[ $- != *i* ]] && return
+
 if [ -z "$CDS_ENV" ]; then
     export CDS_ENV=default
 fi
