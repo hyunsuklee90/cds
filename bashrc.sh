@@ -25,3 +25,5 @@ if [ -d $CDS_HOME/config/$CDS_ENV ]; then
 else
     echo "Error: Configuration for environment '$CDS_ENV' not found."
 fi
+
+echo "HI"
