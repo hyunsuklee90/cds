@@ -1,9 +1,11 @@
 help([[
-This module loads Anaconda3
+This module loads Anaconda3-24.9.2
 ]])
 
-whatis("Name: Anaconda3")
+whatis("Name: Anaconda3-24.9.2")
 whatis("Conda_dir: /opt/anaconda3")
+
+setenv("CONDA_ROOT", "/opt/anaconda3")
 
 local conda_dir = "/opt/anaconda3"
 
