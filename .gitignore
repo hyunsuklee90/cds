@@ -1,1 +1,8 @@
+# Global ignores
+*.bak
+backups/
+
+# Local data files
+cds_db
+cds_history
 develop

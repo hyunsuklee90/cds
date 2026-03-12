@@ -26,4 +26,4 @@ else
     echo "Error: Configuration for environment '$CDS_ENV' not found."
 fi
 
-export PATH=.:$PATH
+export PATH=.:$HOME/.local/bin:$PATH

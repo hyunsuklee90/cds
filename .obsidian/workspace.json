@@ -1,0 +1,204 @@
+{
+  "main": {
+    "id": "c06e28ee15e5c3cc",
+    "type": "split",
+    "children": [
+      {
+        "id": "0d476af3ad80dfe9",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "10ed66dca6616f95",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "docs/ARCHITECTURE.md",
+                "mode": "preview",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "ARCHITECTURE"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "6ec981b074df030b",
+    "type": "split",
+    "children": [
+      {
+        "id": "4f948c797a3e66be",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "7eb500e8a783e0c5",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "34a9e2ffcdece487",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "5d4f04dbc5b7ed00",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "63e86aefa53ab7c3",
+    "type": "split",
+    "children": [
+      {
+        "id": "45840578fe6546aa",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "7fd9e6c63908f3b6",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "docs/ARCHITECTURE.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks for ARCHITECTURE"
+            }
+          },
+          {
+            "id": "0a55dce9f186b37f",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "docs/ARCHITECTURE.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links from ARCHITECTURE"
+            }
+          },
+          {
+            "id": "21cf129c64e9759a",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "b1af5003daa3a836",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "51e3cfc3f5dff51f",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "docs/ARCHITECTURE.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline of ARCHITECTURE"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false
+    }
+  },
+  "active": "10ed66dca6616f95",
+  "lastOpenFiles": [
+    "config/laptop/data/sedXu76Uj",
+    "config/laptop/data/backups/cds_db.10",
+    "config/laptop/data/backups/cds_db.9",
+    "config/laptop/data/sedpRUeOn",
+    "config/laptop/data/backups/cds_db.8",
+    "config/laptop/data/sedbTASji",
+    "config/laptop/data/backups/cds_db.7",
+    "config/laptop/data/sed9ejJnz",
+    "config/laptop/data/backups/cds_db.6",
+    "config/laptop/data/backups/cds_db.5",
+    "config/laptop/data/sedFKUh8A",
+    "docs/CDS_MANUAL.md",
+    "docs/CDS_DEVELOPER_GUIDE.md",
+    "docs/ARCHITECTURE.md",
+    "GEMINI.md"
+  ]
+}

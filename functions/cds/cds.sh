@@ -1,258 +1,261 @@
 #!/bin/bash
 
-cds_save()
-{
-   rm -f $CDS_DATAPATH/data/cds_*
-   i=1
-   while [  "x${SCPATH[$i]}" != "x" ]
-   do
-      echo [${SCNAME[$i]}] idx=${SCIDX[$i]} path=${SCPATH[$i]}
-      echo ${SCPATH[$i]} >> $CDS_DATAPATH/data/cds_path
-      echo ${SCNAME[$i]} >> $CDS_DATAPATH/data/cds_tag
-      echo ${SCIDX[$i]} >> $CDS_DATAPATH/data/cds_idx
-      let i=i+1
-   done
+# ==============================================================================
+# CDS (Custom Directory Shortcut) Utility - Secure Version
+# ==============================================================================
+
+_cds_migrate() {
+    local db_file="$CDS_DATAPATH/data/cds_db"
+    local old_path="$CDS_DATAPATH/data/cds_path"
+    local old_tag="$CDS_DATAPATH/data/cds_tag"
+    local old_idx="$CDS_DATAPATH/data/cds_idx"
+
+    if [[ -f "$old_path" && ! -f "$db_file" ]]; then
+        paste -d '|' "$old_idx" "$old_tag" "$old_path" > "$db_file"
+        \mv "$old_path" "${old_path}.bak"
+        \mv "$old_tag" "${old_tag}.bak"
+        \mv "$old_idx" "${old_idx}.bak"
+    fi
+    [[ ! -f "$db_file" ]] && touch "$db_file"
 }
 
-cds_load()
-{
-   unset SCPATH SCNAME SCIDX
-
-   if test -f $CDS_DATAPATH/data/cds_path; then
-      # read path from the file
-      i=1
-      while read line; do
-         SCPATH[$i]=$line
-         SCNAME[$i]="-"
-         SCIDX[$i]=""
-         let i=i+1
-      done < $CDS_DATAPATH/data/cds_path
-      let n=i-1 # number of saved path
-
-      i=1
-      while read line; do
-         SCNAME[$i]=$line
-         let i=i+1
-      done < $CDS_DATAPATH/data/cds_tag
-
-      i=1
-      for p in $(cat $CDS_DATAPATH/data/cds_idx)
-      do
-         SCIDX[$i]=$p
-         let i=i+1
-      done
-
-      # assign the idx if it is not assigned
-      for (( i=1; i<=$n; i++ ))
-      do
-         if [ -z ${SCIDX[$i]} ]; then
-            for (( j=1; j<=$n; j++ ))
-            do
-               found=0
-               for (( k=1; k<=$n; k++ ))
-               do
-                  # echo loop $i $j $k ${SCIDX[$k]} $found
-                  if [ ! -z ${SCIDX[$k]} ]; then
-                     if (( ${SCIDX[$k]} == $j )); then
-                        # echo $ found..!
-                        found=1
-                        break
-                     fi
-                  fi
-               done
-               if (($found == 0)); then
-                  # echo set SCIDX to $j
-                  SCIDX[$i]=$j
-                  break
-               fi
-            done
-         fi
-         # echo ${SCIDX[$i]}
-      done
-
-   else
-      n=0
-   fi
+_cds_init_session() {
+    local db_file="$CDS_DATAPATH/data/cds_db"
+    local mode="${CDS_MODE:-direct}"
+    if [[ "$mode" == "memory" ]]; then
+        export _CDS_SESSION_DB="/tmp/cds_db_${USER}_${$}"
+        if [[ ! -f "$_CDS_SESSION_DB" ]]; then
+            [[ -f "$db_file" ]] && \cp "$db_file" "$_CDS_SESSION_DB" || touch "$_CDS_SESSION_DB"
+        fi
+    fi
 }
 
-cds()
-{
-#case $1 in
-case ${1:-"-l"} in
-"-h" | "-help")
-   echo "usage: cds [option]"
-   echo "arg ...  :"
-   echo "-s       :"
-   echo "-l       : print the list of path details"
-   echo "-a       : add short cut path"
-   echo "         cds -a     ;add shorcut to current pwd"
-   echo "         cds -a 10  ;add shortcut to current pwd and set index to 10"
-   echo "-r [idx] : remove shortcut path of index=[idx]"
-;;
-"-save")
-   cds_save
-;;
-"-load")
-   cds_load
-;;
-"-l")
-   i=1
-   if [ $# -eq 2 ]; then
-      echo ${SCPATH[$(cds_get_i $2)]}
-   else
-      #echo ""
-      #echo " [idx|tag]: path"
-      #echo ""
-      while [  "x${SCPATH[$i]}" != "x" ]
-      do
-         # echo " $i [${SCIDX[$i]}|${SCNAME[$i]}]: ${SCPATH[$i]}"
-         echo " [${SCIDX[$i]}|${SCNAME[$i]}]: ${SCPATH[$i]}"
-         let i=i+1
-      done
-   fi
-;;
-#"")
-#   i=1
-#   if [ $# -eq 2 ]; then
-#      echo ${SCPATH[$2]}
-#   else
-#      while [  "x${SCPATH[$i]}" != "x" ]
-#      do
-#         if [ "${SCNAME[$i]}" = "-" ]; then
-#            echo " ${SCIDX[$i]}  ${SCPATH[$i]}"
-#            let i=i+1
-#         else
-#            echo " ${SCIDX[$i]}  [${SCNAME[$i]}]"
-#            let i=i+1
-#         fi
-#      done
-#   fi
-#;;
-"-s" | "-sp")
-   cds_get_i $2
-   i1=$idx
-   cds_get_i $3
-   i2=$idx
-   if [[ $i1 -ne 0 ]] && [[ $i2 -ne 0 ]]; then
-      tmp=${SCPATH[$i1]}
-      tmp2=${SCNAME[$i1]}
-
-      SCPATH[$i1]=${SCPATH[$i2]}
-      SCNAME[$i1]=${SCNAME[$i2]}
-
-      SCPATH[$i2]=$tmp
-      SCNAME[$i2]=$tmp2
-
-      if [ "$1" =  "-s" ]; then
-         tmp3=${SCIDX[$i1]}
-         SCIDX[$i1]=${SCIDX[$i2]}
-         SCIDX[$i2]=$tmp3
-      fi
-
-   fi
-;;
-"-a")
-   i=1
-   while [  "x${SCPATH[$i]}" != "x" ]
-   do
-      let i=i+1
-   done
-   if [ $# -eq 1 ]; then
-      SCPATH[$i]=$(pwd)
-   else
-      SCPATH[$i]=$2
-   fi
-
-   SCNAME[$i]="-"
-   SCIDX[$i]=$i
-
-   echo "short cut path $i is added : ${SCPATH[$i]}"
-   let n=i
-   # SCID[$i] = $i
-;;
-
-"-an" | "-cn")
-   cds_get_i $2 # update idx
-   if [[ $idx -ne 0 ]]; then
-      echo "change shortcut name of $2 to $3"
-      SCNAME[$idx]=$3
-   fi
-;;
-
-"-ai" | "-ci")
-   cds_get_i $3 0 # update idx
-   if [[ $idx -ne 0 ]]; then
-      # switch index
-      i1=$idx
-      cds_get_i $2 # update idx
-      i2=$idx
-      if [[ $idx -ne 0 ]]; then
-         echo "switch shortcut index of $2 to $3"
-         tmp=${SCIDX[$i1]}
-         SCIDX[$i1]=${SCIDX[$i2]}
-         SCIDX[$i2]=$tmp
-      fi
-   else
-      cds_get_i $2 # update idx
-      if [[ $idx -ne 0 ]]; then
-         echo "change shortcut index of $2 to $3"
-         SCIDX[$idx]=$3
-      fi
-   fi
-;;
-
-"-r" | "-rm")
-   cds_get_i $2
-   i=$idx
-   if [[ $i -ne 0 ]]; then
-      echo "short cut path $2 is removed : ${SCPATH[$i]}"
-      let j=i+1
-      while  [  "x${SCPATH[$j]}" != "x" ]
-      do
-         SCPATH[$i]=${SCPATH[$j]}
-         SCNAME[$i]=${SCNAME[$j]}
-         SCIDX[$i]=${SCIDX[$j]}
-         let i=i+1
-         let j=j+1
-      done
-      SCPATH[$i]=""
-      SCNAME[$i]=""
-      SCIDX[$i]=""
-   fi
-   let n=i
-;;
-
-"-p")
-   cds_get_i $2 # update idx
-   if [[ $idx -ne 0 ]]; then
-      echo ${SCPATH[$idx]}
-   fi
-;;
-
-*)
-   cds_get_i $1 # update idx
-   if [[ $idx -ne 0 ]]; then
-      cd ${SCPATH[$idx]}
-   fi
-;;
-esac
+_cds_get_active_db() {
+    local mode="${CDS_MODE:-direct}"
+    if [[ "$mode" == "memory" && -f "$_CDS_SESSION_DB" ]]; then
+        echo "$_CDS_SESSION_DB"
+    else
+        echo "$CDS_DATAPATH/data/cds_db"
+    fi
 }
 
-cds_get_i()
-{
-   for (( i=1; i<=$n; i++ ))
-   do
-      if [ "$1" = "${SCIDX[$i]}" ]; then
-         idx=$i
-         break
-      fi
-      if (( $i == $n )); then
-         if (( $# == 1 )); then
-         echo "index '$1' is not in the list"
-         echo "check the available list"
-         echo "cds -l"
-         fi
-         idx=0
-      fi
-   done
+_cds_backup() {
+    local active_db=$(_cds_get_active_db)
+    local backup_dir="$CDS_DATAPATH/data/backups"
+    [[ ! -f "$active_db" ]] && return
+    [[ ! -d "$backup_dir" ]] && mkdir -p "$backup_dir"
+    for i in {10..2}; do
+        local prev=$((i-1))
+        [[ -f "$backup_dir/cds_db.$prev" ]] && \mv "$backup_dir/cds_db.$prev" "$backup_dir/cds_db.$i"
+    done
+    \cp "$active_db" "$backup_dir/cds_db.1"
+}
+
+_cds_undo() {
+    local active_db=$(_cds_get_active_db)
+    local backup_dir="$CDS_DATAPATH/data/backups"
+    if [[ -f "$backup_dir/cds_db.1" ]]; then
+        \mv "$backup_dir/cds_db.1" "$active_db"
+        echo "Undo successful. Restored to previous state." >&2
+        for i in {1..9}; do
+            local next=$((i+1))
+            [[ -f "$backup_dir/cds_db.$next" ]] && \mv "$backup_dir/cds_db.$next" "$backup_dir/cds_db.$i"
+        done
+        _cds_print_list
+    else
+        echo "No more backups found to undo." >&2
+    fi
+}
+
+_cds_sort_db() {
+    local active_db=$(_cds_get_active_db)
+    [[ -f "$active_db" ]] && sort -t'|' -k1,1n "$active_db" -o "$active_db"
+}
+
+_cds_log() {
+    local path="$1"
+    local history_file="$CDS_DATAPATH/data/cds_history"
+    [[ ! -d "$(dirname "$history_file")" ]] && mkdir -p "$(dirname "$history_file")"
+    [[ "$path" == "$HOME" || "$path" == "/" ]] && return
+    echo "$path" >> "$history_file"
+    if (( $(wc -l < "$history_file") > 5000 )); then
+        tail -n 4000 "$history_file" > "${history_file}.tmp" && \mv "${history_file}.tmp" "$history_file"
+    fi
+}
+
+_cds_print_list() {
+    local active_db=$(_cds_get_active_db)
+    if [[ ! -s "$active_db" ]]; then
+        echo "No shortcuts saved yet." >&2
+        return
+    fi
+    # Headers and list go to stdout if interactive, or stderr if in subshell to avoid pollution
+    {
+        printf "%-5s | %-10s | %s\n" "IDX" "TAG" "PATH"
+        printf "%s\n" "------------------------------------"
+        sort -t'|' -k1,1n "$active_db" | awk -F'|' '{ printf "%-5s | %-10s | %s\n", $1, $2, $3 }'
+    } >&$( [[ -t 1 ]] && echo 1 || echo 2 )
+}
+
+_cds_get_path() {
+    local query="$1"
+    local active_db=$(_cds_get_active_db)
+    awk -F'|' -v q="$query" '$1 == q || $2 == q { print $3; exit }' "$active_db"
+}
+
+_cds_smart_get_path() {
+    local query="$1"
+    local history_file="$CDS_DATAPATH/data/cds_history"
+    [[ ! -f "$history_file" ]] && return
+    grep -i -- "$query" "$history_file" | sort | uniq -c | sort -nr | awk '{$1=""; print substr($0,2); exit}'
+}
+
+_cds_swap() {
+    local idx1="$1"
+    local idx2="$2"
+    local active_db=$(_cds_get_active_db)
+    
+    if [[ -z "$idx1" || -z "$idx2" ]]; then
+        echo "Usage: cds -s [idx1] [idx2]" >&2
+        return
+    fi
+
+    local line1=$(awk -F'|' -v idx="$idx1" '$1 == idx {print; exit}' "$active_db")
+    local line2=$(awk -F'|' -v idx="$idx2" '$1 == idx {print; exit}' "$active_db")
+    
+    if [[ -z "$line1" && -z "$line2" ]]; then
+        echo "Error: Neither index $idx1 nor $idx2 exists." >&2
+        return
+    fi
+    
+    _cds_backup
+    
+    # Remove both
+    sed -i "/^$idx1|/d; /^$idx2|/d" "$active_db"
+    
+    # Add them back with swapped indexes
+    [[ -n "$line1" ]] && echo "$idx2|${line1#*|}" >> "$active_db"
+    [[ -n "$line2" ]] && echo "$idx1|${line2#*|}" >> "$active_db"
+    
+    _cds_sort_db
+    echo "Swapped/Moved indexes $idx1 and $idx2" >&2
+}
+
+cd() {
+    if [[ $# -eq 0 ]]; then builtin cd "$HOME" || return; else builtin cd "$@" || return; fi
+    _cds_log "$(pwd)"
+}
+
+cds() {
+    local db_file="$CDS_DATAPATH/data/cds_db"
+    local mode="${CDS_MODE:-direct}"
+    _cds_migrate
+    _cds_init_session
+    
+    local active_db=$(_cds_get_active_db)
+    local cmd="${1:-"-l"}"
+
+    case "$cmd" in
+        "-h"|"-help"|"--help")
+            echo "Usage: cds [option | idx | tag | query]" >&2
+            echo "Options:" >&2
+            echo "  -l               : List all shortcuts (default)" >&2
+            echo "  -a [path] [idx]  : Add directory" >&2
+            echo "  -an [idx] [tag]  : Assign/Update tag" >&2
+            echo "  -r [idx|tag]     : Remove shortcut" >&2
+            echo "  -s [idx1] [idx2] : Swap/Move indexes" >&2
+            echo "  -undo            : Undo last change" >&2
+            echo "  -z [query]       : Smart Jump" >&2
+            echo "  [idx|tag]        : Jump (or print path if used in $())" >&2
+            ;;
+
+        "-save")
+            if [[ "$mode" == "memory" ]]; then _cds_backup; \cp "$_CDS_SESSION_DB" "$db_file"; echo "Saved to disk." >&2; else echo "Direct mode active." >&2; fi
+            ;;
+
+        "-load")
+            if [[ "$mode" == "memory" ]]; then \cp "$db_file" "$_CDS_SESSION_DB"; echo "Reloaded." >&2; _cds_print_list; else echo "Direct mode active." >&2; fi
+            ;;
+
+        "-l")
+            if [[ -n "$2" ]]; then 
+                local p=$(_cds_get_path "$2")
+                [[ -n "$p" ]] && echo "$p" || echo "Not found." >&2
+            else 
+                _cds_print_list
+            fi
+            ;;
+
+        "-a")
+            _cds_backup
+            local target_path="${2:-$(pwd)}"
+            [[ "$target_path" == "." ]] && target_path=$(pwd)
+            local target_idx="$3"
+            if [[ -n "$target_idx" ]]; then sed -i "/^$target_idx|/d" "$active_db"; else
+                target_idx=$(awk -F'|' '{a[$1]=1} END{i=1; while(a[i]) i++; print i}' "$active_db")
+            fi
+            echo "$target_idx|-|$target_path" >> "$active_db"
+            _cds_sort_db
+            echo "Added [$target_idx]: $target_path" >&2
+            ;;
+
+        "-an"|"-cn")
+            _cds_backup
+            local target="$2"; local new_tag="$3"
+            sed -i "s/^\($target\)|[^|]*/\1|$new_tag/" "$active_db"
+            echo "Updated tag for $target to '$new_tag'" >&2
+            ;;
+
+        "-s"|"-ci")
+            _cds_swap "$2" "$3"
+            ;;
+
+        "-r"|"-rm")
+            _cds_backup
+            local target="$2"
+            sed -i "/^$target|/d; /|${target}|/d" "$active_db"
+            echo "Removed: $target" >&2
+            ;;
+
+        "-undo")
+            _cds_undo
+            ;;
+
+        "-p")
+            _cds_get_path "$2"
+            ;;
+
+        "-z")
+            local query="$2"
+            if [[ -z "$query" ]]; then
+                sort "$CDS_DATAPATH/data/cds_history" | uniq -c | sort -nr | head -n 10 >&2
+            else
+                local target_path=$(_cds_smart_get_path "$query")
+                if [[ -n "$target_path" ]]; then
+                    if [[ -t 1 ]]; then echo "Smart jumping to: $target_path" >&2; cd "$target_path"; else printf "%s" "$target_path"; fi
+                else
+                    [[ -t 1 ]] && echo "No match found for '$query'." >&2
+                fi
+            fi
+            ;;
+
+        *)
+            local target_path=$(_cds_get_path "$cmd")
+            [[ -z "$target_path" ]] && target_path=$(_cds_smart_get_path "$cmd")
+
+            if [[ -n "$target_path" ]]; then
+                if [[ -d "$target_path" ]]; then
+                    if [[ -t 1 ]]; then
+                        cd "$target_path" 
+                    else
+                        printf "%s" "$target_path" 
+                    fi
+                else
+                    [[ -t 1 ]] && echo "Error: Directory does not exist: $target_path" >&2
+                fi
+            else
+                [[ -t 1 ]] && echo "Shortcut/History '$cmd' not found." >&2
+            fi
+            ;;
+    esac
 }
